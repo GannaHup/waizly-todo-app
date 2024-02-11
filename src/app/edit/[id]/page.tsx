@@ -70,7 +70,7 @@ const EditTask: React.FC = () => {
 
   if (!detailTask) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center h-screen px-4">
         <EmptyState
           title="Task Not Found"
           description="Sorry, your task was not found. Maybe your task has been deleted or not created yet"
@@ -80,7 +80,7 @@ const EditTask: React.FC = () => {
   }
 
   return (
-    <div className="max-w-[1200px] flex flex-col gap-7  justify-center mx-auto py-10">
+    <div className="max-w-[1200px] flex flex-col gap-7 justify-center mx-auto p-10 max-md:p-4 max-md:gap-4">
       <Modal
         isVisible={isOpen}
         title="Update Confirmation"
@@ -126,7 +126,7 @@ const EditTask: React.FC = () => {
 
         <Button
           size="regular"
-          className="w-full mt-4"
+          className="w-full mt-4 max-md:mt-0"
           onClick={handleConfirmUpdate}
         >
           Update

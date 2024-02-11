@@ -34,12 +34,12 @@ const variantMapping: VariantMappingType = {
 const textVariants = cva("text-pot-black", {
   variants: {
     variant: {
-      "heading-1": "font-extrabold text-4xl max-md:text-[32px]",
-      "heading-2": "font-semibold text-2xl max-md:text-2xl",
+      "heading-1": "font-extrabold text-4xl max-md:text-2xl",
+      "heading-2": "font-semibold text-2xl max-md:text-xl",
       title: "font-bold text-xl max-md:text-base",
       regular: "font-medium text-lg max-md:text-base",
-      small: "text-base",
-      xsmall: "text-sm",
+      small: "text-base max-md:text-sm",
+      xsmall: "text-sm max-md:text-xs",
     },
   },
   defaultVariants: {

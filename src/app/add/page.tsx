@@ -42,7 +42,7 @@ const AddTask: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col gap-7  justify-center mx-auto py-10">
+    <div className="flex flex-col gap-7  justify-center mx-auto p-10 max-md:p-4 max-md:gap-4">
       <Link
         href="/"
         className="cursor-pointer max-w-max flex flex-row gap-2 items-center hover:bg-blue-300/30 px-4 py-1 rounded-full"
@@ -71,7 +71,7 @@ const AddTask: React.FC = () => {
 
         <Button
           size="regular"
-          className="w-full mt-2"
+          className="w-full mt-4 max-md:mt-0"
           onClick={handleCreateTask}
         >
           Create

@@ -56,7 +56,7 @@ const Modal: React.FC<ModalProps> = ({
       )}
     >
       <div
-        className="bg-white flex p-6 rounded-2xl justify-start items-start"
+        className="bg-white flex p-6 rounded-2xl justify-start items-start max-md:p-4"
         style={animationStyle}
         onClick={(event) => event.stopPropagation()}
       >
@@ -64,7 +64,7 @@ const Modal: React.FC<ModalProps> = ({
           {children ? (
             children
           ) : (
-            <div className="w-[360px] flex flex-col gap-3">
+            <div className="w-[360px] max-md:w-[280px] flex flex-col gap-3">
               <Text className="text-center" variant="title">
                 {title}
               </Text>
@@ -78,11 +78,12 @@ const Modal: React.FC<ModalProps> = ({
                 </Text>
               )}
 
-              <div className="flex justify-between gap-3 mt-10">
+              <div className="flex justify-between gap-3 mt-10 max-md:flex-col-reverse">
                 {textButtonSecondary && (
                   <Button
                     variant="primary-outline"
                     size="small"
+                    className="max-md:px-6"
                     onClick={onClose}
                   >
                     {textButtonSecondary}
@@ -90,7 +91,12 @@ const Modal: React.FC<ModalProps> = ({
                 )}
 
                 {textButtonPrimary && (
-                  <Button variant="primary" size="small" onClick={onAction}>
+                  <Button
+                    variant="primary"
+                    size="small"
+                    className="max-md:px-6"
+                    onClick={onAction}
+                  >
                     {textButtonPrimary}
                   </Button>
                 )}

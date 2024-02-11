@@ -37,7 +37,7 @@ const Input: React.FC<InputProps> = ({
           id={id}
           type="text"
           className={cn(
-            "w-full rounded-[5px] border border-mercury bg-white p-2.5 text-lg text-black/90 placeholder:text-black/30 outline-none focus-visible:border-ultramarine-shadow focus-visible:ring-transparent focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:border-baby-talk-grey disabled:bg-baby-talk-grey/60",
+            "w-full rounded-lg border border-clouded-vision bg-white p-2.5 text-base max-md:text-sm text-black/90 placeholder:text-black/30 outline-none focus-visible:border-ultramarine-shadow focus-visible:ring-transparent focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:border-baby-talk-grey disabled:bg-baby-talk-grey/60",
             isError && "border-red-600",
             className
           )}
@@ -45,7 +45,7 @@ const Input: React.FC<InputProps> = ({
         />
         {isError && (
           <Text variant="xsmall" className="text-red-600">
-            {errorMessage || "This fill is required"}
+            {errorMessage || "This field is required"}
           </Text>
         )}
       </div>

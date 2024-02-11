@@ -14,7 +14,7 @@ module.exports = {
       // https://colornamer.robertcooper.me/ => for naming colors
       colors: {
         "baby-talk-grey": "#BABABA",
-        mercury: "#EBEBEB",
+        "clouded-vision": "#D1D1D1",
         "pot-black": "#161616",
         "smouldering-red": "#CB3A31",
         "ultramarine-shadow": "#0A0547",
