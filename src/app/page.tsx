@@ -1,113 +1,125 @@
+"use client";
+
 import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 
-export default function Home() {
+import Card from "@/components/Card";
+import Icon from "@/components/Icons";
+import Input from "@/components/Input";
+import Modal from "@/components/Modal";
+import Text from "@/components/Text";
+import { CONSTANTS } from "@/constants";
+import useDisclosure from "@/hooks/useDisclosure";
+import { useWeather } from "@/modules/weather/hooks";
+import { useTasksStore } from "@/stores/tasks";
+
+export default function Dashboard() {
+  const { tasks, selectedTask, deleteTask } = useTasksStore();
+  const [keyword, setKeyword] = useState("");
+  const { isOpen, onClose, onOpen } = useDisclosure({ open: false });
+  const [getLocation, setGeoLocation] = useState({
+    lat: 0,
+    lon: 0,
+  });
+
+  const listTask = useMemo(() => {
+    if (!keyword) return tasks;
+    return tasks.filter((task) => {
+      if (
+        task.title.toLocaleLowerCase().includes(keyword.toLocaleLowerCase()) ||
+        task.description
+          .toLocaleLowerCase()
+          .includes(keyword.toLocaleLowerCase())
+      )
+        return task;
+    });
+  }, [tasks, keyword]);
+
+  const { data, isLoading } = useWeather({
+    lat: getLocation.lat || CONSTANTS.latitude,
+    lon: getLocation.lon || CONSTANTS.longtitude,
+    appid: process.env.API_KEY_WEATHER || "",
+    units: "metric",
+  });
+
+  const handleDeleteTask = () => {
+    deleteTask(selectedTask?.id || 0);
+    onClose();
+  };
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+        setGeoLocation({
+          lat: latitude,
+          lon: longitude,
+        });
+      });
+    }
+  }, []);
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
+    <div className="relative h-screen flex flex-col gap-5 py-4">
+      <Modal
+        isVisible={isOpen}
+        title="Delete Confirmation"
+        description="Are you sure want to delete this task?"
+        caption={selectedTask?.title}
+        textButtonPrimary="Delete"
+        textButtonSecondary="Cancel"
+        onClose={onClose}
+        onAction={handleDeleteTask}
+      />
+      <div className="flex bg-gradient-blue justify-between p-8 rounded-2xl">
+        <Text variant="heading-2" className="text-white">
+          Hello, Welcome to Waizly Notes
+        </Text>
+        {isLoading ? (
+          <div className="animatepulse flex flex-col gap-2 items-end">
+            <div className="h-5 w-56 bg-slate-300 rounded-xl" />
+            <div className="h-4 w-28 bg-slate-300 rounded-xl" />
+          </div>
+        ) : (
+          <div className="flex flex-col items-end gap-1">
+            <div className="flex gap-2">
+              <Image
+                src={`${CONSTANTS.imgWeather}/${data?.weather[0]?.icon || ""}@2x.png`}
+                alt="Icon Clouds"
+                width={32}
+                height={32}
+              />
+              <Text variant="heading-2" className="text-white">
+                {data?.name}, {Math.round(data?.main.temp || 0)}° C
+              </Text>
+            </div>
+            <Text variant="xsmall" className="text-white capitalize">
+              {data?.weather?.[0].description}
+            </Text>
+          </div>
+        )}
       </div>
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
+      <Input
+        placeholder="Search task..."
+        value={keyword}
+        className="rounded-xl px-4"
+        onChange={(e) => setKeyword(e.currentTarget.value)}
+      />
+
+      <div className="grid grid-cols-2 flex-wrap gap-5 rounded-lg p-5 max-h-[85%] overflow-y-auto">
+        {listTask.map((task, index) => {
+          return <Card {...task} key={index} onDelete={onOpen} />;
+        })}
       </div>
 
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+      <Link
+        href="/add"
+        className="absolute bottom-28 right-5 cursor-pointer hover:bg-ultramarine-shadow bg-ultramarine-shadow/70 rounded-full p-3"
+      >
+        <Icon name="plus" color="#fff" width={24} height={24} />
+      </Link>
+    </div>
   );
 }
